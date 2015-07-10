@@ -1,6 +1,6 @@
 /*
-    btTank v0.1
-    08 July 2015
+    btTank v0.2
+    09 July 2015
     Kristof Aldenderfer (aldenderfer.github.io)
 
     HARDWARE:
@@ -11,8 +11,10 @@
         - iOS: none
 
     CHANGELOG:
-        - none; this is the first version!
+        - rough scale of the values to make sure motors were driving at 100% or 0%
+        - everything else unchanged; you are a genius
     TODO:
+        - L/R MIXUP! FIX PLZ
         - math accelerometer values better
         - smooth accelerometer values
         - add ios app support
@@ -29,7 +31,7 @@ float left, right;
 float sensorVals[2];
 byte motorPins[6] = { 2, 3, 4, 5, 6, 7 };
 String app = "SensDuino";
-boolean verboseMode = true;
+boolean verboseMode = false;
 
 void setup() {
   // communication to the BT board
@@ -58,8 +60,13 @@ void loop() {
     }
     if (app == "SensDuino") sensDuinoParse();
     vectorize();
+    // do proper math here!
     motorDirection(0, (left >= 0) );
     motorDirection(1, (right >= 0) );
+    if (abs(left) > 3) left = 255;
+    else left = 0;
+    if (abs(right) > 3) right = 255;
+    else right = 0;
     motorSpeed(0, abs(left) );
     motorSpeed(1, abs(right) );
   }
@@ -81,12 +88,12 @@ void sensDuinoParse() {
 //    stringVals[i] = btStream.substring(xloc + 1, yloc);
 //    sensorVals[i] = stringVals[i].toFloat();
     sensorVals[i] = (btStream.substring(xloc + 1, yloc)).toFloat();;
-    if (i == 1) sensorVals[i] -= 4.4;
+    if (i == 1) sensorVals[i] -= 4.9;
     xloc = yloc;
   }
 }
 
-// expects -4.4 to 4.4
+// expects -4.9 to 4.9
 // from http://www.goodrobot.com/en/2009/09/tank-drive-via-joystick-control/
 // this is beautiful
 void vectorize() {
