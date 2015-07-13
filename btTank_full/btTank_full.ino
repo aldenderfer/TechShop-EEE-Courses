@@ -1,6 +1,6 @@
 /*
-    btTank v0.2
-    09 July 2015
+    btTank v0.3
+    10 July 2015
     Kristof Aldenderfer (aldenderfer.github.io)
 
     HARDWARE:
@@ -11,10 +11,8 @@
         - iOS: none
 
     CHANGELOG:
-        - rough scale of the values to make sure motors were driving at 100% or 0%
-        - everything else unchanged; you are a genius
+        - L/R swap has been fixed
     TODO:
-        - L/R MIXUP! FIX PLZ
         - math accelerometer values better
         - smooth accelerometer values
         - add ios app support
@@ -119,11 +117,11 @@ void vectorize() {
   float movve = max(abs(y), abs(x));
   // First and third quadrant
   if ( (x >= 0 && y >= 0) || (x < 0 &&  y < 0) ) {
-    left = movve;
-    right = turn;
-  } else {
     right = movve;
     left = turn;
+  } else {
+    left = movve;
+    right = turn;
   }
   // Reverse polarity
   if (y > 0) {
