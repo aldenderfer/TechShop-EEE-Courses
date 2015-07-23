@@ -47,11 +47,6 @@ USB Usb;
 PS3USB PS3(&Usb);
 
 void setup() {
-  // communication to the BT board
-  pinMode(RxD, INPUT);
-  pinMode(TxD, OUTPUT);
-  pinMode(PWR, OUTPUT);
-  digitalWrite(PWR, HIGH);
   // motor control pins
   for (int i = 0 ; i < 6 ; i++) {
     pinMode(motorPins[i], OUTPUT);
@@ -60,9 +55,9 @@ void setup() {
     // this section can also be cleaned up
     // additionally: move this to another function?
     Serial.begin(115200);
-    #if !defined(__MIPSEL__)
-      while (!Serial); // Wait for serial port to connect - used on Leonardo, Teensy and other boards with built-in USB CDC serial connection
-    #endif
+#if !defined(__MIPSEL__)
+    while (!Serial); // Wait for serial port to connect - used on Leonardo, Teensy and other boards with built-in USB CDC serial connection
+#endif
     if (Usb.Init() == -1) {
       Serial.print(F("\r\nOSC did not start"));
       while (1); //halt
@@ -70,6 +65,11 @@ void setup() {
     Serial.print(F("\r\nPS3 USB Library Started"));
   }
   else {
+    // communication to the BT board
+    pinMode(RxD, INPUT);
+    pinMode(TxD, OUTPUT);
+    pinMode(PWR, OUTPUT);
+    digitalWrite(PWR, HIGH);
     Serial.begin(9600);
     delay(100);
     blueToothSerial.begin(9600);
@@ -83,9 +83,9 @@ void loop() {
   if (ui == "ps3") {
     Usb.Task();
     if (PS3.PS3Connected || PS3.PS3NavigationConnected) {
-     motorDirection(PS3.getAnalogHat(LeftHatY) <= 130, (PS3.getAnalogHat(RightHatY) <= 130) );
-     motorSpeed((PS3.getAnalogButton(L2)), (PS3.getAnalogButton(R2)));   
-     delay(100);
+      motorDirection(PS3.getAnalogHat(LeftHatY) <= 130, (PS3.getAnalogHat(RightHatY) <= 130) );
+      motorSpeed((PS3.getAnalogButton(L2)), (PS3.getAnalogButton(R2)));
+      delay(100);
     }
   }
   // else are we using an android device?
@@ -121,11 +121,11 @@ void loop() {
    output: none
  */
 void motorDirection(boolean l, boolean r) {
-    digitalWrite(motorPins[0], l);
-    digitalWrite(motorPins[2], !l);
-    digitalWrite(motorPins[3], r);
-    digitalWrite(motorPins[5], !r);
-  }
+  digitalWrite(motorPins[0], l);
+  digitalWrite(motorPins[2], !l);
+  digitalWrite(motorPins[3], r);
+  digitalWrite(motorPins[5], !r);
+}
 
 /* sets both motor speeds
    input: left and right PWM values (byte)
@@ -133,9 +133,9 @@ void motorDirection(boolean l, boolean r) {
    output: none
  */
 void motorSpeed(byte l, byte r) {
-    analogWrite(motorPins[1], l);
-    analogWrite(motorPins[4], r);
-  }
+  analogWrite(motorPins[1], l);
+  analogWrite(motorPins[4], r);
+}
 
 /* parsing for SensDuino (android only)
    chops up the stream into parts, scales to PWM values, and constrains
@@ -144,11 +144,11 @@ void motorSpeed(byte l, byte r) {
    output: none
  */
 void sensDuinoParse(String bts) {
-    int xloc = bts.indexOf(',', 3);
-    float sensorVals[2];
-    for (int i = 0 ; i < 2 ; i++ ) {
-      int yloc = bts.indexOf(',', xloc + 1);
-      sensorVals[i] = ((bts.substring(xloc + 1, yloc)).toFloat())*52;
+  int xloc = bts.indexOf(',', 3);
+  float sensorVals[2];
+  for (int i = 0 ; i < 2 ; i++ ) {
+    int yloc = bts.indexOf(',', xloc + 1);
+    sensorVals[i] = ((bts.substring(xloc + 1, yloc)).toFloat()) * 52;
     // why 52? because these values are coming in as +-4.9
     // and we want them to be +-255. 255/4.9 = 52
     if (i == 1) sensorVals[i] -= 255;
@@ -188,10 +188,10 @@ void vectorize(float x, float y) {
   if ( (x >= 0 && y >= 0) || (x < 0 &&  y < 0) ) {
     right = movve;
     left = turn;
-    } else {
-      left = movve;
-      right = turn;
-    }
+  } else {
+    left = movve;
+    right = turn;
+  }
   // Reverse polarity
   if (y > 0) {
     left = 0 - left;
