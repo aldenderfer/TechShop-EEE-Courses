@@ -1,68 +1,52 @@
 /*
-    Red Orm v0.9
-    15 July 2015
+    Red Orm v0.9.2
+    24 July 2015
     Kristof Aldenderfer (aldenderfer.github.io)
     Luca Angeleri
 
-    HARDWARE:
-        - Arduino UNO Rev3
-        - DFRobot Bluetooth V3 (connect GND to pin 9, Vcc to pin 10)
-        - 2-channel motor controller
-        - 2 motors
-        - batteries
-    SUPPORTED UI:
-        - controllers: PS3
-        - Android: SensDuino
-        - iOS: none
-    CHANGELOG:
-        - PS3 CONTROLLER INTEGRATION (well done, Luca!)
-        - renamed from btTank_full to red_orm
-    TODO:
-        - (SensDuino) math accelerometer values better
-        - (SensDuino) smooth accelerometer values
-        - add ios app support
-        - add return status messages back to app
- */
+    For information and setup, see github README.
+*/
 
 #include <SoftwareSerial.h>
+#define RxD 13
+#define TxD 12
+#define PWR 10
+SoftwareSerial blueToothSerial(RxD, TxD);
+
+USB Usb;
 #include <PS3USB.h>
+PS3USB PS3(&Usb);
+#include <XBOXONE.h>
+XBOXONE Xbox(&Usb);
 
-
-// is this block of code needed? since we aren't using teensy, probably not
 #ifdef dobogusinclude
 #include <spi4teensy3.h>
 #include <SPI.h>
 #endif
 
-#define RxD 13
-#define TxD 12
-#define PWR 10
 // direction 1 (left), speed (left), direction 2 (left), direction 1 (right), speed (right), direction 2 (right)
 byte motorPins[6] = { 2, 3, 4, 5, 6, 7 };
-String ui = "SensDuino";
+String ui = "SensDuino"; // options: SensDuino, ArduDroid, ps3, xboxone
 boolean verboseMode = false;
-SoftwareSerial blueToothSerial(RxD, TxD);
 float left, right;
-USB Usb;
-PS3USB PS3(&Usb);
 
 void setup() {
   // motor control pins
   for (int i = 0 ; i < 6 ; i++) {
     pinMode(motorPins[i], OUTPUT);
   }
-  if (ui == "ps3") {
+  if ( (ui == "ps3") || (ui == "xboxone") ) {
     // this section can also be cleaned up
     // additionally: move this to another function?
     Serial.begin(115200);
-#if !defined(__MIPSEL__)
-    while (!Serial); // Wait for serial port to connect - used on Leonardo, Teensy and other boards with built-in USB CDC serial connection
-#endif
+    #if !defined(__MIPSEL__)
+      while (!Serial); // Wait for serial port to connect - used on Leonardo, Teensy and other boards with built-in USB CDC serial connection
+    #endif
     if (Usb.Init() == -1) {
       Serial.print(F("\r\nOSC did not start"));
       while (1); //halt
     }
-    Serial.print(F("\r\nPS3 USB Library Started"));
+    Serial.print(F("\r\nUSB Library Started"));
   }
   else {
     // communication to the BT board
@@ -79,14 +63,25 @@ void setup() {
 }
 
 void loop() {
-  // are we using a ps3 controller?
-  if (ui == "ps3") {
+  // are we using a ps3 or xboxone controller?
+  if ( (ui == "ps3") || (ui == "xboxone") ) {
     Usb.Task();
     if (PS3.PS3Connected || PS3.PS3NavigationConnected) {
-      motorDirection(PS3.getAnalogHat(LeftHatY) <= 130, (PS3.getAnalogHat(RightHatY) <= 130) );
-      motorSpeed((PS3.getAnalogButton(L2)), (PS3.getAnalogButton(R2)));
-      delay(100);
+      left = (PS3.getAnalogHat(LeftHatY)*2-255);
+      right = (PS3.getAnalogHat(RightHatY)*2-255);
+      if ( (left < 10) && (left > -10) ) left = 0;
+      if ( (right < 10) && (right> -10) ) right = 0
     }
+    else if (Xbox.XboxOneConnected) {
+      left=(Xbox.getAnalogHat(LeftHatY)/32767.0*255);
+      right=(Xbox.getAnalogHat(RightHatY)/32767.0*255);
+      if ( (left < 60) && (left > -60) ) left = 0;
+      if ( (right < 60) && (right > -60) ) right = 0;
+    }
+    if (left > 255) left = 255;
+    if (left < -255) left = -255;
+    if (right > 255) right = 255;
+    if (right < -255) right = -255;
   }
   // else are we using an android device?
   else if (ui == "SensDuino") {
@@ -98,17 +93,22 @@ void loop() {
         Serial.print("\t");
       }
       if (ui == "SensDuino") {
-        sensDuinoParse(btStream);
+        parseSensDuino(btStream);
       }
     }
-    // if value is greater than or equal to 0, then true, therefore forward
-    // else reverse
-    motorDirection( (left >= 0), (right >= 0) );
-    // PWM vals must be positive; direction already set by motorDirection()
-    motorSpeed( abs(left), abs(right) );
   }
+  if (verboseMode) {
+    Serial.print(left);
+    Serial.print("\t");
+    Serial.println(right);
+  }
+  // if value is greater than or equal to 0, then true, therefore forward
+  // else reverse
+  motorDirection( (left >= 0), (right >= 0) );
+  // PWM vals must be positive; direction already set by motorDirection()
+  motorSpeed( abs(left), abs(right) );
   // are we receiving from the tank?
-  if (Serial.available()) {
+  if (Serial.available() && ((ui != "ps3") || (ui == "xboxone") )) {
     while (Serial.available()) {
       blueToothSerial.write(Serial.read());
     }
@@ -143,7 +143,7 @@ void motorSpeed(byte l, byte r) {
    input range: -4.9 to 4.9 for x, 0 to 9.8 for y
    output: none
  */
-void sensDuinoParse(String bts) {
+void parseSensDuino(String bts) {
   int xloc = bts.indexOf(',', 3);
   float sensorVals[2];
   for (int i = 0 ; i < 2 ; i++ ) {
@@ -156,7 +156,7 @@ void sensDuinoParse(String bts) {
     else if (sensorVals[i] < -255) sensorVals[i] = -255;
     xloc = yloc;
   }
-  vectorize(sensorVals[0], sensorVals[1]);
+  xytolr(sensorVals[0], sensorVals[1]);
 }
 
 /* converts xy to lr
@@ -165,7 +165,7 @@ void sensDuinoParse(String bts) {
    input range: -255 to 255
    output: (SET GLOBALS) left and right to +-255
  */
-void vectorize(float x, float y) {
+void xytolr(float x, float y) {
   // first Compute the angle in deg
 
   // First hypotenuse
@@ -214,9 +214,5 @@ void vectorize(float x, float y) {
     Serial.print("\t");
     Serial.print(movve);
     Serial.print("\t");
-    Serial.print(left);
-    Serial.print("\t");
-    Serial.print(right);
-    Serial.println();
   }
 }
