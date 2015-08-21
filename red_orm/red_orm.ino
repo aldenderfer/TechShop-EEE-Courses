@@ -7,28 +7,29 @@
     For information and setup, see github README.
 */
 
+#ifdef dobogusinclude
+#include <spi4teensy3.h>
+#include <SPI.h>
+#endif
+
+#include <PS3USB.h>
+#include <XBOXONE.h>
+USB Usb;
+PS3USB PS3(&Usb);
+XBOXONE Xbox(&Usb);
+
 #include <SoftwareSerial.h>
 #define RxD 13
 #define TxD 12
 #define PWR 10
 SoftwareSerial blueToothSerial(RxD, TxD);
 
-USB Usb;
-#include <PS3USB.h>
-PS3USB PS3(&Usb);
-#include <XBOXONE.h>
-XBOXONE Xbox(&Usb);
-
-#ifdef dobogusinclude
-#include <spi4teensy3.h>
-#include <SPI.h>
-#endif
-
 // direction 1 (left), speed (left), direction 2 (left), direction 1 (right), speed (right), direction 2 (right)
 byte motorPins[6] = { 2, 3, 4, 5, 6, 7 };
-String ui = "SensDuino"; // options: SensDuino, ArduDroid, ps3, xboxone
-boolean verboseMode = false;
+String ui = "ArduDroid"; // options: SensDuino, ArduDroid, ps3, xboxone
+boolean verboseMode = true;
 float left, right;
+const int maxSpeed = 127;
 
 void setup() {
   // motor control pins
@@ -67,21 +68,21 @@ void loop() {
   if ( (ui == "ps3") || (ui == "xboxone") ) {
     Usb.Task();
     if (PS3.PS3Connected || PS3.PS3NavigationConnected) {
-      left = (PS3.getAnalogHat(LeftHatY)*2-255);
-      right = (PS3.getAnalogHat(RightHatY)*2-255);
+      left = (PS3.getAnalogHat(LeftHatY)*2-maxSpeed);
+      right = (PS3.getAnalogHat(RightHatY)*2-maxSpeed);
       if ( (left < 10) && (left > -10) ) left = 0;
-      if ( (right < 10) && (right> -10) ) right = 0
+      if ( (right < 10) && (right> -10) ) right = 0;
     }
     else if (Xbox.XboxOneConnected) {
-      left=(Xbox.getAnalogHat(LeftHatY)/32767.0*255);
-      right=(Xbox.getAnalogHat(RightHatY)/32767.0*255);
+      left=(Xbox.getAnalogHat(LeftHatY)/32767.0*maxSpeed);
+      right=(Xbox.getAnalogHat(RightHatY)/32767.0*maxSpeed);
       if ( (left < 60) && (left > -60) ) left = 0;
       if ( (right < 60) && (right > -60) ) right = 0;
     }
-    if (left > 255) left = 255;
-    if (left < -255) left = -255;
-    if (right > 255) right = 255;
-    if (right < -255) right = -255;
+    if (left > maxSpeed) left = maxSpeed;
+    if (left < -maxSpeed) left = -maxSpeed;
+    if (right > maxSpeed) right = maxSpeed;
+    if (right < -maxSpeed) right = -maxSpeed;
   }
   // else are we using an android device?
   else if (ui == "SensDuino") {
@@ -95,6 +96,17 @@ void loop() {
       if (ui == "SensDuino") {
         parseSensDuino(btStream);
       }
+    }
+  }
+  else if (ui == "ArduDroid") {
+    if (blueToothSerial.available()) {
+      String btStream = blueToothSerial.readStringUntil('#');
+      if (verboseMode) {
+        Serial.print("Received: ");
+        Serial.print(btStream);
+        Serial.print("\t");
+      }
+      parseArduDroid(btStream);
     }
   }
   if (verboseMode) {
@@ -129,7 +141,7 @@ void motorDirection(boolean l, boolean r) {
 
 /* sets both motor speeds
    input: left and right PWM values (byte)
-   input range: 0 to 255
+   input range: 0 to maxSpeed
    output: none
  */
 void motorSpeed(byte l, byte r) {
@@ -150,20 +162,49 @@ void parseSensDuino(String bts) {
     int yloc = bts.indexOf(',', xloc + 1);
     sensorVals[i] = ((bts.substring(xloc + 1, yloc)).toFloat()) * 52;
     // why 52? because these values are coming in as +-4.9
-    // and we want them to be +-255. 255/4.9 = 52
-    if (i == 1) sensorVals[i] -= 255;
-    if (sensorVals[i] > 255) sensorVals[i] = 255;
-    else if (sensorVals[i] < -255) sensorVals[i] = -255;
+    // and we want them to be +-maxSpeed. maxSpeed/4.9 = 52
+    if (i == 1) sensorVals[i] -= maxSpeed;
+    if (sensorVals[i] > maxSpeed) sensorVals[i] = maxSpeed;
+    else if (sensorVals[i] < -maxSpeed) sensorVals[i] = -maxSpeed;
     xloc = yloc;
   }
   xytolr(sensorVals[0], sensorVals[1]);
 }
 
+void parseArduDroid(String bts) {
+  int x, y, z;
+  int startIndex = 1;
+  int endIndex = bts.indexOf('|');
+  x = bts.substring(startIndex, endIndex).toInt();
+  startIndex = endIndex+1;
+  endIndex = bts.indexOf('|', startIndex);
+  y = bts.substring(startIndex, endIndex).toInt();
+  startIndex = endIndex+1;
+  endIndex = bts.indexOf('#', startIndex);
+  z = bts.substring(startIndex, endIndex).toInt();
+  if (x == 11) {
+    if (y == 11) {
+      left = z*2-255;
+    }
+    else if (y == 6) {
+      right = (z*2-255);
+    }
+  }
+  if (verboseMode) {
+    Serial.print(x);
+    Serial.print("\t");
+    Serial.print(y);
+    Serial.print("\t");
+    Serial.print(z);
+    Serial.print("\t");
+  }
+}
+
 /* converts xy to lr
    source: http://www.goodrobot.com/en/2009/09/tank-drive-via-joystick-control/
    input: xy accelerometer values
-   input range: -255 to 255
-   output: (SET GLOBALS) left and right to +-255
+   input range: -maxSpeed to maxSpeed
+   output: (SET GLOBALS) left and right to +-maxSpeed
  */
 void xytolr(float x, float y) {
   // first Compute the angle in deg
