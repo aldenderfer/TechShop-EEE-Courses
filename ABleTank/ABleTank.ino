@@ -7,7 +7,7 @@
  See readme.md for more information and hardware setup
 *********************************************************************/
 byte leftMotorPins[3]   = {23, 14, 15};
-byte leftMotorPins[3]   = {22, 16, 17};
+byte rightMotorPins[3]   = {22, 16, 17};
 byte lightSensorPins[2] = {A4, A5};
 byte maxSpeed           = 255;
 String mode = "manual";
@@ -157,4 +157,22 @@ void loop(void)
       }
     }
   }
+}
+
+/* sets both motor speeds
+   input: left and right PWM values (byte)
+   input range: 0 to maxSpeed
+   output: none
+ */
+void motorSpeeds(byte l, byte r) {
+
+}
+
+/* sets both motor directions
+   input: left and right direction (boolean)
+   input range: true = forward, false = reverse
+   output: none
+ */
+void motorDirections(boolean l, boolean r) {
+
 }
