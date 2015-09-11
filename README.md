@@ -1,4 +1,7 @@
 # TS-Robotics-Camp-Bluetooth-Tank
+
+DEPRECATED
+
 bluetooth-controlled tank (for robotics camp)
 v0.9.2
 23 July 2015

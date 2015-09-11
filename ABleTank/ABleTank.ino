@@ -1,5 +1,5 @@
 /*********************************************************************
- ABleTank 0.9.1
+ ABleTank 0.9.3
  21 August 2015
  Based on the nRF51822 library, used for bluetooth connection to RC tank
  Authors: Luca Angeleri and Kristof Aldenderfer
@@ -11,6 +11,7 @@ byte rightMotorPins[3]   = {22, 16, 17};
 byte lightSensorPins[2] = {A4, A5};
 byte maxSpeed           = 255;
 String mode = "manual";
+boolean verboseMode = true;
 
 #include <string.h>
 #include <Arduino.h>
@@ -46,9 +47,8 @@ void setup(void)
     pinMode(leftMotorPins[i], OUTPUT);
     pinMode(rightMotorPins[i], OUTPUT);
   }
-  pinMode(reverseledPin, OUTPUT);
-  pinMode(lightSensorLPin, INPUT);
-  pinMode(lightSensorRPin, INPUT);
+  pinMode(lightSensorPins[0], INPUT);
+  pinMode(lightSensorPins[1], INPUT);
 
   Serial.begin(115200);
   Serial.println(F("Adafruit Bluefruit App Controller Example"));
@@ -93,8 +93,7 @@ void setup(void)
   Serial.println(F("*****************"));
 }
 
-void loop(void)
-{
+void loop(void) {
   uint8_t len = readPacket(&ble, BLE_READPACKET_TIMEOUT);
   if (packetbuffer[1] == 'B') {
     uint8_t buttnum = packetbuffer[2] - '0';
@@ -112,13 +111,12 @@ void loop(void)
       if (buttonNumber == 1) { // full stop
         mode = "manual";
         motorSpeeds(0, 0);
-        digitalWrite(reverseledPin, LOW);
       }
       else if (buttonNumber == 2) mode = "lightSeek";
       else mode = "null";
     }
     else { // movement button
-      else if (buttonNumber == 5) { // forward
+      if (buttonNumber == 5) { // forward
         motorSpeeds(maxSpeed, maxSpeed);
         motorDirections(true, true);
       }
@@ -134,7 +132,6 @@ void loop(void)
         motorSpeeds(maxSpeed, maxSpeed);
         motorDirections(false, true);
       }
-
     }
   }
   else {
