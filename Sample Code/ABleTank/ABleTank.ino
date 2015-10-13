@@ -7,7 +7,7 @@
  See readme.md for more information and hardware setup
 *********************************************************************/
 byte leftMotorPins[3]   = {23, 14, 15};
-byte rightMotorPins[3]   = {22, 16, 17};
+byte rightMotorPins[3]  = {22, 16, 17};
 byte lightSensorPins[2] = {A4, A5};
 byte maxSpeed           = 255;
 String mode = "manual";
