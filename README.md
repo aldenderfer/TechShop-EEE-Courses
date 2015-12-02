@@ -1,5 +1,8 @@
 # TS-Robotics-Camp-Bluetooth-Tank
 
+Library: https://learn.adafruit.com/introducing-the-adafruit-bluefruit-le-uart-friend/software
+App:     https://learn.adafruit.com/introducing-the-adafruit-bluefruit-le-uart-friend/software-resources
+
 DEPRECATED
 
 bluetooth-controlled tank (for robotics camp)
