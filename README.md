@@ -2,11 +2,9 @@
 
 ##Author: Kristof Aldenderfer
 ##TechShop San Francisco
-Current version: 0.2
+Current version: 0.5
+
+Completed support files and example project.
 
 TODO:
-* Better descriptions of schematic vs footprint
-* Add Gerbers section
-* Flesh out PCB layout section
-* Better warning about EAGLE's persnickety nature
-* Add properly-labeled pictures (with component values)
+* update text
