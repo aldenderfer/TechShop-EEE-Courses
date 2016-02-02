@@ -1,30 +1,25 @@
-# TS-Robotics-Camp-Bluetooth-Tank
+#aBLE-Tank
 
-Library: https://learn.adafruit.com/introducing-the-adafruit-bluefruit-le-uart-friend/software
-App:     https://learn.adafruit.com/introducing-the-adafruit-bluefruit-le-uart-friend/software-resources
+Bluetooth-controlled robotic tank
+For TechShop San Francisco
+v0.9.9
+02 February 2016
 
-DEPRECATED
 
-bluetooth-controlled tank (for robotics camp)
-v0.9.2
-23 July 2015
+###Hardware:
+* [Teensy 3.1+](http://www.pjrc.com/store/teensy32.html "teensy")
+* [Adafruit Bluefruit LE UART Friend](https://www.adafruit.com/products/2479 "ble")
+* [Adafruit TB6612 Motor Driver](https://www.adafruit.com/products/2448 "motor driver")
+* 2 DC motors
+* lipo battery (preferably 500mAh+)
+###Software:
+* Arduino 1.6.5+
+* Teensyduino 1.23+
+* [Adafruit BLE library](https://learn.adafruit.com/introducing-the-adafruit-bluefruit-le-uart-friend/software "lib")
+###Supported control:
+* [App](https://learn.adafruit.com/introducing-the-adafruit-bluefruit-le-uart-friend/software-resources "app")
 
-HARDWARE:
-    - Arduino UNO Rev3
-    - DFRobot Bluetooth V3 (connect GND to pin 9, Vcc to pin 10)
-    - OR Arduino USB shield plus XBOXONE or PS3 controller
-    - 2-channel motor controller
-    - 2 motors
-    - batteries
-SUPPORTED UI:
-    - controllers: XBOXONE, PS3
-    - Android: SensDuino, ArduDroid
-    - iOS: none
-CHANGELOG:
-    - XBOXONE CONTROLLER INTEGRATION (well done, Luca!)
-    - added ArduDroid support (faders 1 and 4 control L and R)
-TODO:
-    - (SensDuino) math accelerometer values better
-    - (SensDuino) smooth accelerometer values
-    - add ios app support (this will be a hardware overhaul)
-    - add return status messages back to app
+
+##CHANGELOG:
+* Corrected readme
+* Modified pin config for easier wiring
