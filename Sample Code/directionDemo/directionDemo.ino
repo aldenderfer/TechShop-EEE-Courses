@@ -1,4 +1,5 @@
-const byte motorPins[6] = { 23, 14, 15, 22, 16, 17 };
+const byte motorPins[6] = { 14, 23, 15, 16, 22, 17 };
+// AIN1, PWMA, AIN2, BIN1, PWMB, BIN2
 
 void setup() {
   for (int i=0 ; i<6 ; i++) {

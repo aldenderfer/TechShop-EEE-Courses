@@ -6,9 +6,9 @@
  For: Robotics Camp, TechShop San Francisco (Summer 2015)
  See readme.md for more information and hardware setup
 *********************************************************************/
-byte leftMotorPins[3]   = {23, 14, 15};
-byte rightMotorPins[3]  = {22, 16, 17};
-byte lightSensorPins[2] = {A4, A5};
+byte leftMotorPins[3]   = {21, 18, 19};
+byte rightMotorPins[3]  = {20, 17, 16};
+byte lightSensorPins[2] = {A0, A1};
 byte maxSpeed           = 255;
 String mode = "manual";
 boolean verboseMode = true;
