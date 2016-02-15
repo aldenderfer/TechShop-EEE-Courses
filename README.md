@@ -1,7 +1,7 @@
 # TechShop EEE Courses
 Designed and written by Kristof Aldenderfer, Sam Brown, and Luca Angeleri.
 
-All packets are current as of 12 February 2016. **Do not distribute until all courses are listed as complete.**
+All packets are current as of 12 February 2016. See [flowchart](https://github.com/aldenderfer/TechShop-EEE-Courses/blob/master/Electronics%20flowchart.pdf) for more information about how this affects current course offerings. **Do not distribute until all courses are listed as complete.**
 
 Course | Status | Hours | Materials cost | Prerequisite | Notes
 --- | --- | --- | --- | --- | ---
