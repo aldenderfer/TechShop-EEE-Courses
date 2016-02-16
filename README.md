@@ -14,4 +14,4 @@ Arduino Programming | *Alpha* | 3 | ? | Arduino Wiring | -
 Advanced Arduino | *Pre-Alpha* | 3 | ? | Arduino Programming | -
 Circuit Design with EAGLE | Beta | 2.5 | $0 | Circuit Analysis: AC | -
 PCB Milling with the Othermill | Beta | 2 | $5 | Circuit Design with EAGLE | -
-Arduino Robotics | **Complete** | weeklong | $100 | none (incorporates Basic Electronics) | -
+Arduino Robotics Camp | **Complete** | weeklong | $100 | none (incorporates Basic Electronics) | -
