@@ -49,5 +49,3 @@ Temporary Items
 # EAGLE-specific temp and non-useful files
 *.s#*
 *.b#*
-*.epf
-*.pro
