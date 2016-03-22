@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="7.4.0">
+<eagle version="7.5.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -265,7 +265,7 @@
 <wire x1="12.7" y1="10.795" x2="12.065" y2="12.065" width="0.254" layer="21"/>
 <wire x1="12.7" y1="10.795" x2="13.335" y2="12.065" width="0.254" layer="21"/>
 <text x="16.51" y="38.1" size="0.762" layer="21">Basic Electronics</text>
-<text x="16.51" y="36.83" size="0.635" layer="21">Version 1.0.1</text>
+<text x="16.51" y="36.83" size="0.635" layer="21">Version 1.0.2</text>
 <text x="16.51" y="35.56" size="0.635" layer="21">Kristof Aldenderfer</text>
 <text x="13.97" y="27.94" size="0.635" layer="22" rot="MR0">(Arrows indicate
 current direction)</text>
@@ -1374,8 +1374,8 @@ type 0207, grid 10 mm</description>
 <wire x1="2.921" y1="1.143" x2="2.54" y2="1.143" width="0.1524" layer="21"/>
 <wire x1="2.921" y1="-1.143" x2="2.54" y2="-1.143" width="0.1524" layer="21"/>
 <wire x1="3.175" y1="-0.889" x2="3.175" y2="0.889" width="0.1524" layer="21"/>
-<pad name="1" x="-5.08" y="0" drill="0.8128" shape="octagon"/>
-<pad name="2" x="5.08" y="0" drill="0.8128" shape="octagon"/>
+<pad name="1" x="-5.08" y="0" drill="0.8128" diameter="1.778" shape="octagon"/>
+<pad name="2" x="5.08" y="0" drill="0.8128" diameter="1.778" shape="octagon"/>
 <text x="-3.048" y="1.524" size="1.27" layer="25" ratio="10">&gt;NAME</text>
 <text x="-2.2606" y="-0.635" size="1.27" layer="27" ratio="10">&gt;VALUE</text>
 <rectangle x1="3.175" y1="-0.3048" x2="4.0386" y2="0.3048" layer="21"/>
