@@ -9,7 +9,7 @@
 byte leftMotorPins[3]   = {21, 18, 19};
 byte rightMotorPins[3]  = {20, 17, 16};
 byte lightSensorPins[2] = {A0, A1};
-byte maxSpeed           = 255;
+byte maxSpeed           = 127;
 String mode = "manual";
 boolean verboseMode = true;
 
@@ -81,6 +81,12 @@ void setup(void)
 
   ble.verbose(false);  // debug info is a little annoying after this point!
 
+  Serial.println(F("Setting device name to 'ABleTank': "));
+  if (! ble.sendCommandCheckOK(F("AT+GAPDEVNAME=ABleTank")) ) {
+    error(F("Could not set device name."));
+  }
+  else Serial.println("name of device is now ABleTank.");
+
   /* Wait for connection */
   while (! ble.isConnected()) {
     delay(500);
@@ -126,11 +132,11 @@ void loop(void) {
       }
       else if (buttonNumber == 7) { // left
         motorSpeeds(maxSpeed, maxSpeed);
-        motorDirections(true, false);
+        motorDirections(false, true);
       }
       else if (buttonNumber == 8) { // right
         motorSpeeds(maxSpeed, maxSpeed);
-        motorDirections(false, true);
+        motorDirections(true, false);
       }
     }
   }
@@ -162,7 +168,10 @@ void loop(void) {
    output: none
  */
 void motorSpeeds(byte l, byte r) {
-
+  analogWrite(leftMotorPins[0], l);
+  analogWrite(rightMotorPins[0], r);
+  byte leftMotorPins[3]   = {21, 18, 19};
+byte rightMotorPins[3]  = {20, 17, 16};
 }
 
 /* sets both motor directions
@@ -171,5 +180,8 @@ void motorSpeeds(byte l, byte r) {
    output: none
  */
 void motorDirections(boolean l, boolean r) {
-
+  digitalWrite(leftMotorPins[1], l);
+  digitalWrite(leftMotorPins[2], !l);
+  digitalWrite(rightMotorPins[1], r);
+  digitalWrite(rightMotorPins[2], !r);
 }
